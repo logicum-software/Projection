@@ -14,7 +14,7 @@ public class Application {
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
 
-        int nNumbersToFind = 200000;
+        int nNumbersToFind = 300000;
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
