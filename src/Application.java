@@ -9,6 +9,8 @@ public class Application {
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
 
+        int nNumbersToFind = 100000;
+
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
         JFrame f = new JFrame();
@@ -18,7 +20,7 @@ public class Application {
         b.setBounds(14, 14, 100, 20);
 
         // initialize the ProgressBar
-        JProgressBar pb = new JProgressBar(0, 10000);
+        JProgressBar pb = new JProgressBar(0, nNumbersToFind);
         pb.setBounds(14, 50, 350, 20);
         pb.setStringPainted(true);
         pb.setValue(0);
@@ -34,7 +36,7 @@ public class Application {
 
             @Override
             protected Integer doInBackground() {
-                for (int i = 3; i < 10000; i++) {
+                for (int i = 3; i < nNumbersToFind; i++) {
                     for (int z = 2; z < i; z++) {
                         if (i % z == 0) {
                             break;
@@ -42,8 +44,15 @@ public class Application {
                             nPrimes++;
                         }
                     }
+                    publish(i);
                 }
                 return nPrimes;
+            }
+
+            @Override
+            protected void process(List<Integer> chunks) {
+                for (Integer number : chunks)
+                    pb.setValue(number);
             }
 
             @Override
