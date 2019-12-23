@@ -3,13 +3,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class Application {
 
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
 
-        int nNumbersToFind = 100000;
+        int nNumbersToFind = 200000;
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
@@ -31,11 +36,20 @@ public class Application {
         JLabel labelPrimes = new JLabel("");
         labelPrimes.setBounds(250, 100, 50, 20);
 
+        //Initialize labels for Time
+        JLabel labelTextTime = new JLabel("Dauer der Berechnung:");
+        labelTextTime.setBounds(14, 150, 200, 20);
+        JLabel labelTime = new JLabel("");
+        labelTime.setBounds(250, 150, 100, 20);
+
         class PrimeNumbersTask extends SwingWorker<Integer, Integer> {
             int nPrimes = 0;
+            Calendar calStart, calEnd;
+            SimpleDateFormat sdDate = new SimpleDateFormat("mm:ss.SSS");
 
             @Override
             protected Integer doInBackground() {
+                calStart = Calendar.getInstance();
                 for (int i = 3; i < nNumbersToFind; i++) {
                     for (int z = 2; z < i; z++) {
                         if (i % z == 0) {
@@ -51,13 +65,24 @@ public class Application {
 
             @Override
             protected void process(List<Integer> chunks) {
-                for (Integer number : chunks)
-                    pb.setValue(number);
+                for (Integer number : chunks) {
+                    pb.setValue(number + 1);
+                    calEnd = Calendar.getInstance();
+                    long lDiff = calEnd.getTimeInMillis() - calStart.getTimeInMillis();
+                    Date dResult = new Date(lDiff);
+                    String strTime = sdDate.format(dResult);
+                    labelTime.setText(strTime);
+                }
             }
 
             @Override
             protected void done() {
                 labelPrimes.setText(Integer.toString(nPrimes));
+                calEnd = Calendar.getInstance();
+                long lDiff = calEnd.getTimeInMillis() - calStart.getTimeInMillis();
+                Date dResult = new Date(lDiff);
+                String strTime = sdDate.format(dResult);
+                labelTime.setText(strTime);
             }
         }
 
@@ -65,6 +90,8 @@ public class Application {
         f.add(pb);
         f.add(labelText);
         f.add(labelPrimes);
+        f.add(labelTextTime);
+        f.add(labelTime);
         f.setSize(400, 300);
         f.setLocationRelativeTo(null);
         f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
